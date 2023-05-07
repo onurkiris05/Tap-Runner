@@ -13,12 +13,12 @@ public class PlayerController : MonoBehaviour
 
     private void OnEnable()
     {
-        GameManager.Instance.OnTap += SetTarget;
+        GameManager.Instance.OnSliced += SetTarget;
     }
 
     private void OnDisable()
     {
-        GameManager.Instance.OnTap -= SetTarget;
+        GameManager.Instance.OnSliced -= SetTarget;
     }
 
     private void Update()
@@ -29,7 +29,7 @@ public class PlayerController : MonoBehaviour
     
     private void SetTarget()
     {
-        target = _platformManager.LastStack.transform;
+        target = _platformManager.LastMovingStack.transform;
     }
 
     private void Move()

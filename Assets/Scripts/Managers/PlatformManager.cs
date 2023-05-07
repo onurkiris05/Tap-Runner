@@ -6,40 +6,73 @@ using UnityEngine;
 public class PlatformManager : MonoBehaviour
 {
     [SerializeField] private StackManager _stackManager;
+    [SerializeField] private float _perfectTapTolerance = 0.15f;
 
-    public Stack LastStack => _lastStack;
-    private Stack _lastStack;
-    private Stack _currentStack;
+    public MovingStack LastMovingStack => _lastMovingStack;
+    private MovingStack _lastMovingStack;
+    private MovingStack _currentMovingStack;
 
     private void OnEnable()
     {
         GameManager.Instance.OnTap += ProcessPlatform;
+        GameManager.Instance.OnPerfectTap += ProcessPerfectTap;
     }
 
     private void OnDisable()
     {
         GameManager.Instance.OnTap -= ProcessPlatform;
+        GameManager.Instance.OnPerfectTap -= ProcessPerfectTap;
     }
 
     public void Init()
     {
-        if (_lastStack == null)
+        if (_lastMovingStack == null)
         {
-            _lastStack = _stackManager.StartStack;
+            _lastMovingStack = _stackManager.StartStack;
         }
 
-        if (_currentStack == null)
+        if (_currentMovingStack == null)
         {
-            _currentStack = _stackManager.SpawnStack(_lastStack);
+            _currentMovingStack = _stackManager.SpawnStack(_lastMovingStack);
         }
     }
 
-    public void ProcessPlatform()
+    private void ProcessPlatform()
     {
-        _currentStack.StopMoving();
+        _currentMovingStack.StopMoving();
+        
+        //Calculate surplus piece according to last stack
+        float remaining = _currentMovingStack.transform.position.x - _lastMovingStack.transform.position.x;
 
+        //If miss the last stack then game over
+        if (Mathf.Abs(remaining) >= _lastMovingStack.transform.localScale.x)
+        {
+            GameManager.Instance.InvokeOnGameOver();
+            return;
+        }
 
-        _lastStack = _currentStack;
-        _currentStack = _stackManager.SpawnStack(_lastStack);
+        //If perfectly tapped, process perfect scenario
+        if (Mathf.Abs(remaining) < _perfectTapTolerance)
+        {
+            GameManager.Instance.InvokeOnPerfectTap();
+        }
+        else
+        {
+            _stackManager.SliceStack(_lastMovingStack, _currentMovingStack, remaining);
+            _lastMovingStack = _currentMovingStack;
+            GameManager.Instance.InvokeOnSliced();
+        }
+
+        _lastMovingStack = _currentMovingStack;
+        _currentMovingStack = _stackManager.SpawnStack(_lastMovingStack);
+    }
+
+    private void ProcessPerfectTap()
+    {
+        var tLast = _lastMovingStack.transform;
+        var tCurrent = _currentMovingStack.transform;
+
+        tCurrent.position = new Vector3(tLast.position.x, tCurrent.position.y, tCurrent.position.z);
+        tCurrent.localScale = tLast.localScale;
     }
 }

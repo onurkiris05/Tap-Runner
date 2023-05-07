@@ -1,10 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Stack : MonoBehaviour
+public class MovingStack : Stack
 {
-    public float Speed = 2;
+    [SerializeField] private float _speed = 2;
+    
     private bool isMoving;
 
     public void StartMoving()
@@ -25,9 +27,9 @@ public class Stack : MonoBehaviour
     {
         while (isMoving)
         {
-            transform.Translate(0, 0, Speed * Time.deltaTime);
+            transform.Translate(_speed * Time.deltaTime, 0, 0);
 
-            yield return null; // Wait for the next frame
+            yield return null;
         }
     }
 }

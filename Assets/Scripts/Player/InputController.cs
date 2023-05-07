@@ -6,7 +6,7 @@ public class InputController : MonoBehaviour
 {
     private Finger movementFinger;
 
-    void OnEnable()
+    private void OnEnable()
     {
         EnhancedTouchSupport.Enable();
 
@@ -15,7 +15,7 @@ public class InputController : MonoBehaviour
         ETouch.Touch.onFingerMove += HandleFingerMove;
     }
 
-    void OnDisable()
+    private void OnDisable()
     {
         ETouch.Touch.onFingerDown -= HandleFingerDown;
         ETouch.Touch.onFingerUp -= HandleFingerUp;
@@ -24,7 +24,7 @@ public class InputController : MonoBehaviour
         EnhancedTouchSupport.Disable();
     }
 
-    void HandleFingerDown(Finger touchedFinger)
+    private void HandleFingerDown(Finger touchedFinger)
     {
         if (movementFinger == null)
         {
@@ -34,15 +34,16 @@ public class InputController : MonoBehaviour
         }
     }
 
-    void HandleFingerUp(Finger lostFinger)
+    private void HandleFingerUp(Finger lostFinger)
     {
         if (lostFinger == movementFinger)
         {
             movementFinger = null;
+            // Do some stuff
         }
     }
 
-    void HandleFingerMove(Finger movedFinger)
+    private void HandleFingerMove(Finger movedFinger)
     {
         if (movedFinger == movementFinger)
         {

@@ -46,9 +46,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 450d2f8c7abf4db488029b0e516388f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _spawnPos: []
-  _startStack: {fileID: 0}
-  _stack: {fileID: 0}
+  _spawnPos:
+  - {fileID: 6794742190061813605}
+  - {fileID: 5497807292837947681}
+  _spawner: {fileID: 1058849578325039970}
+  _startStack: {fileID: 8297359014284275314}
+  _movingStack: {fileID: 3514935330386420749, guid: 50283c475e6b93542a09ea2d92afe9e1,
+    type: 3}
+  _materials:
+  - {fileID: 2100000, guid: 5b25cd95e3901d24f89b00fa0a88cf4c, type: 2}
+  - {fileID: 2100000, guid: d1e7205df0c8b0142bf4385f4199ab2c, type: 2}
+  - {fileID: 2100000, guid: a3f65138ba8a675438e7191cd4351bfe, type: 2}
+  - {fileID: 2100000, guid: 98bc5af520a7f624783cdfc4c1c5bcca, type: 2}
+  - {fileID: 2100000, guid: f48468e12d711ee4da62cf65f8254ad2, type: 2}
+  - {fileID: 2100000, guid: c214257391153804293dbb96e065df56, type: 2}
+  - {fileID: 2100000, guid: b02ed249a60bdba41afe8f6ddacef5b4, type: 2}
+  - {fileID: 2100000, guid: f813eb11ed90ff046ad69dc9976b2461, type: 2}
+  - {fileID: 2100000, guid: fcb9c323e8c713747bc3e7d6378dccb0, type: 2}
+  - {fileID: 2100000, guid: 43ec189d7c38e3649beef684813b05a3, type: 2}
+  - {fileID: 2100000, guid: efb903d1709c5074598cd4ae6560f3fc, type: 2}
+  - {fileID: 2100000, guid: 1dd26154d76e96a4e916daa40a9e9a7c, type: 2}
+  - {fileID: 2100000, guid: ce5ad19c3bde65e4c92e45e4cf48f65a, type: 2}
+  - {fileID: 2100000, guid: 2417053ac6c393e44a78492af9a4c13a, type: 2}
+  - {fileID: 2100000, guid: dd347e81ce36318498797e58da2bb346, type: 2}
+  - {fileID: 2100000, guid: 99bdd94bba457a94fb7a832cb58cc2dd, type: 2}
+  - {fileID: 2100000, guid: fe7b24cd1b1fad84298ca4d593f94325, type: 2}
+  - {fileID: 2100000, guid: 77e54005eace8f4418b34dfae2d88a8c, type: 2}
+  - {fileID: 2100000, guid: 2721c33cc7ed8c444bf50bb50b11b055, type: 2}
+  - {fileID: 2100000, guid: 0304769e0c8dd25459a3cf2f6b542a59, type: 2}
+  - {fileID: 2100000, guid: d0ca2cd4145ff9c4282021e14702f4af, type: 2}
 --- !u!1 &2241000598888142526
 GameObject:
   m_ObjectHideFlags: 0
@@ -59,7 +85,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6794742190061813605}
   m_Layer: 0
-  m_Name: LeftPoint
+  m_Name: LeftSpawnPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -90,7 +116,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1058849578325039970}
   m_Layer: 0
-  m_Name: SpawnPoints
+  m_Name: Spawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -123,7 +149,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5497807292837947681}
   m_Layer: 0
-  m_Name: RightPoint
+  m_Name: RightSpawnPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -158,6 +184,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5185162299394740034, guid: 50283c475e6b93542a09ea2d92afe9e1,
         type: 3}
+      propertyPath: m_LocalScale.z
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 5185162299394740034, guid: 50283c475e6b93542a09ea2d92afe9e1,
+        type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -169,7 +200,7 @@ PrefabInstance:
     - target: {fileID: 5185162299394740034, guid: 50283c475e6b93542a09ea2d92afe9e1,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.5
+      value: -3.5
       objectReference: {fileID: 0}
     - target: {fileID: 5185162299394740034, guid: 50283c475e6b93542a09ea2d92afe9e1,
         type: 3}
@@ -219,3 +250,15 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 4891378689145277055}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8297359014284275314 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3514935330386420749, guid: 50283c475e6b93542a09ea2d92afe9e1,
+    type: 3}
+  m_PrefabInstance: {fileID: 4891378689145277055}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 050425d418bb7d846be63727895fc684, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
