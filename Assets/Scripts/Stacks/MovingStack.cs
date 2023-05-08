@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MovingStack : Stack
@@ -8,6 +6,8 @@ public class MovingStack : Stack
     [SerializeField] private float _speed = 2;
     
     private bool isMoving;
+
+    #region PUBLIC METHODS
 
     public void StartMoving()
     {
@@ -23,6 +23,10 @@ public class MovingStack : Stack
         isMoving = false;
     }
 
+    #endregion
+
+    #region PRIVATE METHODS
+
     private IEnumerator MoveStack()
     {
         while (isMoving)
@@ -32,4 +36,6 @@ public class MovingStack : Stack
             yield return null;
         }
     }
+
+    #endregion
 }

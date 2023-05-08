@@ -1,53 +1,75 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlatformManager : MonoBehaviour
 {
+    [Header("Components")] 
     [SerializeField] private StackManager _stackManager;
+
+    [Space] [Header("Settings")] 
     [SerializeField] private float _perfectTapTolerance = 0.15f;
+    [Tooltip("Given value represents that platform will be formed by how many stacks")] 
+    [SerializeField] private int _platformLenght = 40;
 
     public MovingStack LastMovingStack => _lastMovingStack;
+    public FinishStack FinishStack => _finishStack;
     private MovingStack _lastMovingStack;
     private MovingStack _currentMovingStack;
+    private FinishStack _finishStack;
+    private bool _isPlatformFinished;
+
+    #region UNITY EVENTS
 
     private void OnEnable()
     {
+        GameManager.Instance.OnGameStart += Init;
         GameManager.Instance.OnTap += ProcessPlatform;
         GameManager.Instance.OnPerfectTap += ProcessPerfectTap;
     }
 
     private void OnDisable()
     {
+        GameManager.Instance.OnGameStart -= Init;
         GameManager.Instance.OnTap -= ProcessPlatform;
         GameManager.Instance.OnPerfectTap -= ProcessPerfectTap;
     }
 
-    public void Init()
+    #endregion
+
+    #region PRIVATE METHODS
+
+    private void Init()
     {
+        Transform initStack;
+
         if (_lastMovingStack == null)
         {
-            _lastMovingStack = _stackManager.StartStack;
+            initStack = _stackManager.StartStack.transform;
         }
+        else
+            initStack = _finishStack.transform;
 
-        if (_currentMovingStack == null)
-        {
-            _currentMovingStack = _stackManager.SpawnStack(_lastMovingStack);
-        }
+        _stackManager.PlaceSpawner(initStack);
+        _lastMovingStack = _stackManager.StartStack;
+        _finishStack = _stackManager.PlaceFinishStack(initStack, _platformLenght);
+        _currentMovingStack = _stackManager.SpawnStack(_stackManager.StartStack);
+        _isPlatformFinished = false;
     }
 
     private void ProcessPlatform()
     {
+        if (_isPlatformFinished) { return; }
+
         _currentMovingStack.StopMoving();
-        
+
         //Calculate surplus piece according to last stack
         float remaining = _currentMovingStack.transform.position.x - _lastMovingStack.transform.position.x;
 
         //If miss the last stack then game over
         if (Mathf.Abs(remaining) >= _lastMovingStack.transform.localScale.x)
         {
-            GameManager.Instance.InvokeOnGameOver();
+            _currentMovingStack.AddComponent<FallingStack>();
+            _currentMovingStack.GetComponent<FallingStack>().DissolveOut();
             return;
         }
 
@@ -56,6 +78,7 @@ public class PlatformManager : MonoBehaviour
         {
             GameManager.Instance.InvokeOnPerfectTap();
         }
+        // Otherwise process slice stack
         else
         {
             _stackManager.SliceStack(_lastMovingStack, _currentMovingStack, remaining);
@@ -64,6 +87,14 @@ public class PlatformManager : MonoBehaviour
         }
 
         _lastMovingStack = _currentMovingStack;
+
+        // Stop spawning stacks when reached to finish stack
+        if ((_finishStack.transform.position.z - _lastMovingStack.transform.position.z) < 5f)
+        {
+            _isPlatformFinished = true;
+            return;
+        }
+
         _currentMovingStack = _stackManager.SpawnStack(_lastMovingStack);
     }
 
@@ -73,6 +104,8 @@ public class PlatformManager : MonoBehaviour
         var tCurrent = _currentMovingStack.transform;
 
         tCurrent.position = new Vector3(tLast.position.x, tCurrent.position.y, tCurrent.position.z);
-        tCurrent.localScale = tLast.localScale;
+        tCurrent.localScale = new Vector3(tLast.localScale.x, tCurrent.localScale.y, tCurrent.localScale.z);
     }
+
+    #endregion
 }

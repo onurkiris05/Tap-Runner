@@ -6,6 +6,8 @@ public class InputController : MonoBehaviour
 {
     private Finger movementFinger;
 
+    #region UNITY EVENTS
+
     private void OnEnable()
     {
         EnhancedTouchSupport.Enable();
@@ -24,13 +26,18 @@ public class InputController : MonoBehaviour
         EnhancedTouchSupport.Disable();
     }
 
+    #endregion
+
+    #region PRIVATE METHODS
+
     private void HandleFingerDown(Finger touchedFinger)
     {
         if (movementFinger == null)
         {
             movementFinger = touchedFinger;
 
-            GameManager.Instance.InvokeOnTap();
+            if (GameManager.Instance.IsGameActive)
+                GameManager.Instance.InvokeOnTap();
         }
     }
 
@@ -50,4 +57,6 @@ public class InputController : MonoBehaviour
             // Do some stuff
         }
     }
+
+    #endregion
 }

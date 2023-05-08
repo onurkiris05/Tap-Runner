@@ -1,30 +1,36 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class GameManager : Singleton<GameManager>
+public class GameManager : SingletonPersistent<GameManager>
 {
-    [SerializeField] private PlatformManager _platformManager;
-
-    public event Action OnTap;
-    public event Action OnSliced;
+    public event Action OnGameStart;
     public event Action OnGameOver;
+    public event Action OnGameWin;
+    public event Action OnTap;
     public event Action OnPerfectTap;
+    public event Action OnSliced;
 
-    private void Awake()
-    {
-        _platformManager.Init();
-    }
+    public bool IsGameActive { get; private set; }
 
-    public void InvokeOnTap()
+    #region PUBLIC METHODS
+
+    public void InvokeOnGameStart()
     {
-        OnTap?.Invoke();
+        IsGameActive = true;
+        OnGameStart?.Invoke();
     }
 
     public void InvokeOnGameOver()
     {
+        if (!IsGameActive){return;}
+        IsGameActive = false;
         OnGameOver?.Invoke();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+    
+    public void InvokeOnTap()
+    {
+        OnTap?.Invoke();
     }
 
     public void InvokeOnPerfectTap()
@@ -36,4 +42,11 @@ public class GameManager : Singleton<GameManager>
     {
         OnSliced?.Invoke();
     }
+
+    public void InvokeOnWin()
+    {
+        OnGameWin?.Invoke();
+    }
+
+    #endregion
 }

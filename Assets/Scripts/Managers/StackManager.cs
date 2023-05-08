@@ -1,23 +1,22 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class StackManager : MonoBehaviour
 {
-    [Header("Components")] [SerializeField]
-    private Transform[] _spawnPos;
-
-    [SerializeField] private Transform _spawner;
+    [Header("Components")] 
     [SerializeField] private MovingStack _startStack;
     [SerializeField] private MovingStack _movingStack;
+    [SerializeField] private FinishStack _finishStack;
 
-    [Space] [Header("Settings")] [SerializeField]
-    private Material[] _materials;
+    [Space] [Header("Settings")] 
+    [SerializeField] private Material[] _materials;
+    [SerializeField] private Transform[] _spawnPos;
+    [SerializeField] private Transform _spawner;
 
     public MovingStack StartStack => _startStack;
     private int _spawnIndex;
     private int _matIndex;
+
+    #region PUBLIC METHODS
 
     public MovingStack SpawnStack(MovingStack lastMovingStack)
     {
@@ -40,11 +39,31 @@ public class StackManager : MonoBehaviour
 
         //Move stack spawner forward according to instantiated stack size
         _spawner.Translate(0, 0, t.localScale.z);
+        
         createdMovingStack.StartMoving();
-        createdMovingStack.SetMaterial(_materials[_matIndex % _materials.Length]);
+        createdMovingStack.DissolveIn(_materials[_matIndex % _materials.Length]);
         _matIndex++;
 
         return createdMovingStack;
+    }
+
+    public FinishStack PlaceFinishStack(Transform lastStack, int lenght)
+    {
+        //Calculate finish stack position
+        var pos = new Vector3(0, lastStack.position.y, (lastStack.position.z + lastStack.localScale.z / 2) +
+                                                       (lenght * _movingStack.transform.localScale.z) +
+                                                       _finishStack.transform.localScale.z / 2f);
+        //Instantiate finish stack
+        var finishStack = Instantiate(_finishStack, pos, Quaternion.identity, transform);
+
+        return finishStack;
+    }
+
+    public void PlaceSpawner(Transform lastStack)
+    {
+        var pos = new Vector3(0, 0, (lastStack.position.z + lastStack.localScale.z / 2) +
+                                    _movingStack.transform.localScale.z / 2f);
+        _spawner.position = pos;
     }
 
     public void SliceStack(MovingStack lastMovingStack, MovingStack currentMovingStack, float remaining)
@@ -53,26 +72,30 @@ public class StackManager : MonoBehaviour
         var tCurrent = currentMovingStack.transform;
 
         //Calculate on which side that piece will be sliced
-        float direction = remaining > 0 ? 1f : -1f;
+        var direction = remaining > 0 ? 1f : -1f;
 
         //Calculate new size and position for current stack like it got sliced
-        float newXSize = tLast.localScale.x - Mathf.Abs(remaining);
-        float newXPos = tLast.position.x + (remaining / 2);
+        var newXSize = tLast.localScale.x - Mathf.Abs(remaining);
+        var newXPos = tLast.position.x + (remaining / 2);
 
         //Calculate X scale of piece that will fall
-        float fallingStackXSize = tCurrent.localScale.x - newXSize;
+        var fallingStackXSize = tCurrent.localScale.x - newXSize;
 
         //Apply calculated size and position to stack to pretend it sliced
         tCurrent.localScale = new Vector3(newXSize, tCurrent.localScale.y, tCurrent.localScale.z);
         tCurrent.position = new Vector3(newXPos, tCurrent.position.y, tCurrent.position.z);
 
         //Calculate edge of stack and position for falling piece
-        float stackEdge = tCurrent.position.x + (newXSize / 2f * direction);
-        float fallingStackXPos = stackEdge + fallingStackXSize / 2f * direction;
+        var stackEdge = tCurrent.position.x + (newXSize / 2f * direction);
+        var fallingStackXPos = stackEdge + fallingStackXSize / 2f * direction;
 
         //Pass calculated info for instantiate falling piece
         SpawnFallingStack(tCurrent, fallingStackXPos, fallingStackXSize);
     }
+
+    #endregion
+
+    #region PRIVATE METHODS
 
     private void SpawnFallingStack(Transform tCurrent, float fallingStackXPos, float fallingStackXSize)
     {
@@ -85,9 +108,11 @@ public class StackManager : MonoBehaviour
 
         //Add rigidbody to make it drop
         stack.AddComponent<FallingStack>();
-        stack.GetComponent<FallingStack>().SetMaterial(_materials[(_matIndex - 1) % _materials.Length]);
+        stack.GetComponent<FallingStack>().DissolveOut(_materials[(_matIndex - 1) % _materials.Length]);
 
         //Destroy stack after 2 seconds
         Destroy(stack, 2f);
     }
+
+    #endregion
 }

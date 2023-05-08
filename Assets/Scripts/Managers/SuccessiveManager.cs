@@ -1,16 +1,15 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class SuccessiveManager : MonoBehaviour
 {
+    [Header("Settings")]
     [SerializeField] private AudioClip _sliceSFX;
     [SerializeField] private float _pitchIncreaseValue = 0.1f;
     [SerializeField] private float _maxPitchValue = 2f;
 
-    AudioSource _audioSource;
+    private AudioSource _audioSource;
+
+    #region UNITY EVENTS
 
     private void OnEnable()
     {
@@ -19,6 +18,7 @@ public class SuccessiveManager : MonoBehaviour
         GameManager.Instance.OnPerfectTap += PlayPerfectSound;
         GameManager.Instance.OnSliced += PlayNormalSound;
         GameManager.Instance.OnGameOver += ResetPitch;
+        GameManager.Instance.OnGameWin += ResetPitch;
     }
 
     private void OnDisable()
@@ -26,16 +26,19 @@ public class SuccessiveManager : MonoBehaviour
         GameManager.Instance.OnPerfectTap -= PlayPerfectSound;
         GameManager.Instance.OnSliced -= PlayNormalSound;
         GameManager.Instance.OnGameOver -= ResetPitch;
+        GameManager.Instance.OnGameWin -= ResetPitch;
     }
+
+    #endregion
+
+    #region PRIVATE METHODS
 
     private void PlayPerfectSound()
     {
         _audioSource.pitch += _pitchIncreaseValue;
 
         if (_audioSource.pitch > _maxPitchValue)
-        {
             _audioSource.pitch = _maxPitchValue;
-        }
 
         _audioSource.Play();
     }
@@ -50,4 +53,6 @@ public class SuccessiveManager : MonoBehaviour
     {
         _audioSource.pitch = 1f;
     }
+
+    #endregion
 }

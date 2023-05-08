@@ -46,3 +46,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _stackManager: {fileID: 0}
   _perfectTapTolerance: 0.15
+  _platformLenght: 15

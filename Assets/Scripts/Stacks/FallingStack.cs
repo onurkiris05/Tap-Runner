@@ -1,12 +1,20 @@
 using UnityEngine;
+using DG.Tweening;
 
 [RequireComponent(typeof(Rigidbody))]
 public class FallingStack : Stack
 {
+    
+    #region PUBLIC METHODS
 
-    public override void SetMaterial(Material mat)
+    public void DissolveOut()
     {
-        _meshRenderer.material = mat;
-        //Do dissolve stuff here
+        DOTween.Kill(gameObject.name);
+        _meshRenderer.material.SetFloat(_edgeWidth, 0.05f);
+        DOTween.To(() => _meshRenderer.material.GetFloat(_dissolveTime),
+                x => _meshRenderer.material.SetFloat(_dissolveTime, x), 1f, _dissolveOutDuration)
+            .SetEase(Ease.Linear);
     }
+
+    #endregion
 }
