@@ -1,2 +1,2 @@
 # Tap-Runner
- Case Study
+ Runner game
